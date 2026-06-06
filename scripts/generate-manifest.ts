@@ -82,8 +82,8 @@ function loadConfig(): Config {
     const configText = readFileSync(configPath, "utf-8");
     const jsonText = configText
       .replace(/window\.__RUNTIME_CONFIG__\s*=\s*/, "")
-      .replace(/;$/, "")
-      .trim();
+      .trim()
+      .replace(/;$/, "");
 
     const config = JSON.parse(jsonText) as Config;
     console.log("✓ Loaded config from public/config.js");

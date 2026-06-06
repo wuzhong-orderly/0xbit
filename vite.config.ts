@@ -16,8 +16,8 @@ function loadConfigTitle(): string {
     const configText = fs.readFileSync(configPath, "utf-8");
     const jsonText = configText
       .replace(/window\.__RUNTIME_CONFIG__\s*=\s*/, "")
-      .replace(/;$/, "")
-      .trim();
+      .trim()
+      .replace(/;$/, "");
 
     const config = JSON.parse(jsonText);
     return config.VITE_ORDERLY_BROKER_NAME || "Orderly Network";

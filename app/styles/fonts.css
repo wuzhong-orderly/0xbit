@@ -1,20 +1,31 @@
 @font-face {
-  font-family: 'Manrope';
-  src: url('/fonts/Manrope/Manrope-Medium.ttf') format('truetype');
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi/Satoshi-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi/Satoshi-Medium.otf') format('opentype');
   font-weight: 500;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
-  font-family: 'Manrope';
-  src: url('/fonts/Manrope/Manrope-SemiBold.ttf') format('truetype');
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi/Satoshi-Bold.otf') format('opentype');
   font-weight: 600;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
-  font-family: 'Manrope';
-  src: url('/fonts/Manrope/Manrope-Bold.ttf') format('truetype');
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi/Satoshi-Black.otf') format('opentype');
   font-weight: 700;
   font-style: normal;
+  font-display: swap;
 }
