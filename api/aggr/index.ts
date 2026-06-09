@@ -1,1 +1,1 @@
-export { config, default } from "./[...path]";
+export { default } from "./[...path]";

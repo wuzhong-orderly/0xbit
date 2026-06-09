@@ -1,7 +1,3 @@
-export const config = {
-  runtime: "edge",
-};
-
 const AGGR_ORIGIN = "https://aggr.trade";
 const PROXY_PREFIX = "/api/aggr";
 
@@ -9,18 +5,29 @@ const BLOCKING_HEADERS = [
   "content-security-policy",
   "content-security-policy-report-only",
   "x-frame-options",
+  "content-encoding",
+  "content-length",
+  "transfer-encoding",
 ];
 
-function getTargetUrl(requestUrl: string) {
-  const url = new URL(requestUrl);
+const REQUEST_HEADERS_TO_DROP = [
+  "accept-encoding",
+  "connection",
+  "content-length",
+  "host",
+  "origin",
+];
+
+function getTargetUrl(requestUrl: string, host?: string) {
+  const url = new URL(requestUrl, host ? `https://${host}` : undefined);
   const pathname = url.pathname.replace(PROXY_PREFIX, "") || "/";
   const targetUrl = new URL(pathname, AGGR_ORIGIN);
   targetUrl.search = url.search;
   return targetUrl;
 }
 
-function rewriteToProxy(value: string, requestUrl: string) {
-  const proxyOrigin = new URL(requestUrl).origin;
+function rewriteToProxy(value: string, requestUrl: string, host?: string) {
+  const proxyOrigin = new URL(requestUrl, host ? `https://${host}` : undefined).origin;
   const proxyBase = `${proxyOrigin}${PROXY_PREFIX}`;
 
   return value
@@ -31,10 +38,28 @@ function rewriteToProxy(value: string, requestUrl: string) {
     .replaceAll("//aggr.trade/", `${proxyBase}/`)
     .replaceAll('href="/', `href="${PROXY_PREFIX}/`)
     .replaceAll('src="/', `src="${PROXY_PREFIX}/`)
-    .replaceAll('action="/', `action="${PROXY_PREFIX}/`);
+    .replaceAll('action="/', `action="${PROXY_PREFIX}/`)
+    .replaceAll('"/assets/', `"${PROXY_PREFIX}/assets/`)
+    .replaceAll("'/assets/", `'${PROXY_PREFIX}/assets/`)
+    .replaceAll('"/sw.js"', `"${PROXY_PREFIX}/sw.js"`)
+    .replaceAll("'/sw.js'", `'${PROXY_PREFIX}/sw.js'`);
 }
 
-function getResponseHeaders(response: Response, requestUrl: string) {
+function getRequestHeaders(headers: Record<string, string | string[] | undefined>) {
+  const requestHeaders = new Headers();
+
+  for (const [name, value] of Object.entries(headers)) {
+    if (!value || REQUEST_HEADERS_TO_DROP.includes(name.toLowerCase())) {
+      continue;
+    }
+
+    requestHeaders.set(name, Array.isArray(value) ? value.join(", ") : value);
+  }
+
+  return requestHeaders;
+}
+
+function getResponseHeaders(response: Response, requestUrl: string, host?: string) {
   const headers = new Headers(response.headers);
 
   for (const header of BLOCKING_HEADERS) {
@@ -43,43 +68,57 @@ function getResponseHeaders(response: Response, requestUrl: string) {
 
   const location = headers.get("location");
   if (location) {
-    headers.set("location", rewriteToProxy(location, requestUrl));
+    headers.set("location", rewriteToProxy(location, requestUrl, host));
   }
 
   headers.set("content-security-policy", "frame-ancestors 'self'");
   return headers;
 }
 
-export default async function handler(request: Request) {
-  const method = request.method.toUpperCase();
-  const hasBody = method !== "GET" && method !== "HEAD";
-  const requestHeaders = new Headers(request.headers);
-
-  requestHeaders.set("host", new URL(AGGR_ORIGIN).host);
-  requestHeaders.delete("origin");
-
-  const upstreamResponse = await fetch(getTargetUrl(request.url), {
-    method,
-    headers: requestHeaders,
-    body: hasBody ? request.body : undefined,
-    redirect: "manual",
+function writeHeaders(res: any, headers: Headers) {
+  headers.forEach((value, name) => {
+    res.setHeader(name, value);
   });
+}
 
-  const responseHeaders = getResponseHeaders(upstreamResponse, request.url);
-  const contentType = responseHeaders.get("content-type") || "";
+export default async function handler(req: any, res: any) {
+  try {
+    const method = (req.method || "GET").toUpperCase();
+    const hasBody = method !== "GET" && method !== "HEAD";
+    const requestHeaders = getRequestHeaders(req.headers || {});
+    const targetUrl = getTargetUrl(req.url || "/", req.headers?.host);
 
-  if (contentType.includes("text/html")) {
-    const html = await upstreamResponse.text();
-    return new Response(rewriteToProxy(html, request.url), {
-      status: upstreamResponse.status,
-      statusText: upstreamResponse.statusText,
-      headers: responseHeaders,
-    });
+    const upstreamResponse = await fetch(targetUrl, {
+      method,
+      headers: requestHeaders,
+      body: hasBody ? req : undefined,
+      redirect: "manual",
+      duplex: hasBody ? "half" : undefined,
+    } as RequestInit & { duplex?: "half" });
+
+    const responseHeaders = getResponseHeaders(upstreamResponse, req.url || "/", req.headers?.host);
+    const contentType = responseHeaders.get("content-type") || "";
+
+    res.statusCode = upstreamResponse.status;
+    writeHeaders(res, responseHeaders);
+
+    if (
+      contentType.includes("text/") ||
+      contentType.includes("javascript") ||
+      contentType.includes("json") ||
+      contentType.includes("xml")
+    ) {
+      const text = await upstreamResponse.text();
+      res.end(rewriteToProxy(text, req.url || "/", req.headers?.host));
+      return;
+    }
+
+    const body = Buffer.from(await upstreamResponse.arrayBuffer());
+    res.end(body);
+  } catch (error) {
+    console.error("Aggr proxy failed:", error);
+    res.statusCode = 502;
+    res.setHeader("content-type", "text/plain; charset=utf-8");
+    res.end("Aggr proxy failed");
   }
-
-  return new Response(upstreamResponse.body, {
-    status: upstreamResponse.status,
-    statusText: upstreamResponse.statusText,
-    headers: responseHeaders,
-  });
 }
