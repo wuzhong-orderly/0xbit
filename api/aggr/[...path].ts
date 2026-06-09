@@ -26,6 +26,8 @@ function rewriteToProxy(value: string, requestUrl: string) {
   return value
     .replaceAll(`${AGGR_ORIGIN}/`, `${proxyBase}/`)
     .replaceAll(`${AGGR_ORIGIN}`, proxyBase)
+    .replaceAll("https:\\/\\/aggr.trade\\/", `${proxyBase.replaceAll("/", "\\/")}\\/`)
+    .replaceAll("https:\\/\\/aggr.trade", proxyBase.replaceAll("/", "\\/"))
     .replaceAll("//aggr.trade/", `${proxyBase}/`)
     .replaceAll('href="/', `href="${PROXY_PREFIX}/`)
     .replaceAll('src="/', `src="${PROXY_PREFIX}/`)
