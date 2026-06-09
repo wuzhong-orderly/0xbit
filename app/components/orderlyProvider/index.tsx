@@ -2,6 +2,7 @@ import { ReactNode, useCallback, lazy, Suspense, useMemo } from "react";
 import { OrderlyAppProvider } from "@orderly.network/react-app";
 import { registerOnrampPlugin } from "@orderly.network/onramper-plugin";
 import "@orderly.network/onramper-plugin/dist/styles.css";
+import type { PluginRegistrationFn } from "@orderly.network/ui";
 import { useOrderlyConfig } from "@/utils/config";
 import type { NetworkId } from "@orderly.network/types";
 import { LocaleProvider, LocaleCode, LocaleEnum, defaultLanguages } from "@orderly.network/i18n";
@@ -12,8 +13,6 @@ import { createSymbolDataAdapter } from "@/utils/symbol-filter";
 import { DemoGraduationChecker } from "@/components/DemoGraduationChecker";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import ServiceDisclaimerDialog from "./ServiceDisclaimerDialog";
-import { registerOrderlyPlugin } from "../../../plugins/OxbitStarterPlugin/src";
-import "../../../plugins/OxbitStarterPlugin/dist/styles.css";
 
 const NETWORK_ID_KEY = "orderly_network_id";
 
@@ -77,7 +76,7 @@ const OrderlyProvider = (props: { children: ReactNode }) => {
 	const config = useOrderlyConfig();
 	const networkId = getNetworkId();
 	const orderlyPlugins = useMemo(() => {
-		const plugins = [registerOrderlyPlugin({ title: "OxBit Starter Plugin" })];
+		const plugins: PluginRegistrationFn[] = [];
 		const onramperApiKey = getRuntimeConfig('VITE_ONRAMPER_API_KEY');
 		const onramperSecretKey = getRuntimeConfig('VITE_ONRAMPER_SECRET_KEY');
 		const onramperWorkerUrl = getRuntimeConfig('VITE_ONRAMPER_WORKER_URL');
