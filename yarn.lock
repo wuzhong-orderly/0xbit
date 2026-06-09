@@ -2823,6 +2823,13 @@
   dependencies:
     eventemitter3 "^5.0.1"
 
+"@orderly.network/onramper-plugin@^0.3.1":
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/@orderly.network/onramper-plugin/-/onramper-plugin-0.3.1.tgz#c5cd6dd684332133c31323365145d2ab83d13bf5"
+  integrity sha512-rTB86vVreLABsun7ZnYgVEA+LyRbnWQ4BW5x2s8R+/krZwN0iI9wgblyYMF85r9uqjkuek/xKPD5xVaABEGv+g==
+  dependencies:
+    ethers "^6.15.0"
+
 "@orderly.network/perp@5.1.0":
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/@orderly.network/perp/-/perp-5.1.0.tgz#f0e1d9cc66174759779facce8016ca1d2d96e731"
@@ -10080,7 +10087,7 @@ ethers@^5.0.26, ethers@^5.7.2, ethers@^5.8.0:
     "@ethersproject/web" "5.8.0"
     "@ethersproject/wordlists" "5.8.0"
 
-ethers@^6.16.0:
+ethers@^6.15.0, ethers@^6.16.0:
   version "6.16.0"
   resolved "https://registry.yarnpkg.com/ethers/-/ethers-6.16.0.tgz#fff9b4f05d7a359c774ad6e91085a800f7fccf65"
   integrity sha512-U1wulmetNymijEhpSEQ7Ct/P/Jw9/e7R1j5XIbPRydgV2DjLVMsULDlNksq3RQnFgKoLlZf88ijYtWEXcPa07A==
