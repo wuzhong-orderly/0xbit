@@ -1,0 +1,11 @@
+{
+  "npmName": "oxbit-starter-plugin",
+  "pluginId": "oxbit-starter-plugin",
+  "repoUrl": "https://github.com/wuzhong-orderly/0xbit",
+  "tags": [],
+  "storybookUrl": null,
+  "storybookTooltip": null,
+  "usagePrompt": null,
+  "createdAt": "2026-06-09T16:14:33.566Z",
+  "updatedAt": "2026-06-09T16:14:33.566Z"
+}

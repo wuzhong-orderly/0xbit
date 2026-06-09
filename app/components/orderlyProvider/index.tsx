@@ -10,8 +10,11 @@ import { createSymbolDataAdapter } from "@/utils/symbol-filter";
 import { DemoGraduationChecker } from "@/components/DemoGraduationChecker";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import ServiceDisclaimerDialog from "./ServiceDisclaimerDialog";
+import { registerOrderlyPlugin } from "../../../plugins/OxbitStarterPlugin/src";
+import "../../../plugins/OxbitStarterPlugin/dist/styles.css";
 
 const NETWORK_ID_KEY = "orderly_network_id";
+const orderlyPlugins = [registerOrderlyPlugin({ title: "OxBit Starter Plugin" })];
 
 const getNetworkId = (): NetworkId => {
 	if (typeof window === "undefined") return "mainnet";
@@ -167,6 +170,7 @@ const OrderlyProvider = (props: { children: ReactNode }) => {
 			{...(chainFilter && { chainFilter } as any)}
 			defaultChain={defaultChain}
 			dataAdapter={dataAdapter}
+			plugins={orderlyPlugins}
 			restrictedInfo={{
 				customRestrictedRegions: getRuntimeConfigArray('VITE_RESTRICTED_REGIONS'),
 			}}
