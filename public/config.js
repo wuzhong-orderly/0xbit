@@ -18,7 +18,7 @@ window.__RUNTIME_CONFIG__ = {
   "VITE_APP_DESCRIPTION": "Perpetual trading with an Obsidian-native edge.",
   "VITE_HAS_PRIMARY_LOGO": "true",
   "VITE_HAS_SECONDARY_LOGO": "true",
-  "VITE_ENABLED_MENUS": "Trading,Spot,Portfolio,Markets,Aggr,TapeSurf,Leaderboard,Multi-screen,Calendar",
+  "VITE_ENABLED_MENUS": "Trading,Spot,Portfolio,Markets,TapeSurf,Leaderboard,Multi-screen,Calendar",
   "VITE_CUSTOM_MENUS": "",
   "VITE_ENABLE_SERVICE_DISCLAIMER_DIALOG": "false",
   "VITE_ENABLE_CAMPAIGNS": "false",
